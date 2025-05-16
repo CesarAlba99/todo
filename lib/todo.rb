@@ -1,5 +1,6 @@
 module Todo
-  def self.hi(name)
-    "Hi #{name}"
+  extend self
+  def list_tasks
+    [{}, 1]
   end
 end
