@@ -7,8 +7,8 @@ module Todo
     JSON.parse File.read('tasks.json')
   end
 
-  def find(uuid)
+  def find_task(uuid)
     task_file = JSON.parse File.read('tasks.json')
-    task_file.select { |task| task['id'] == uuid }.first || "Task #{uuid} not found"
+    task_file.select { |task| task['id'] == uuid }.first #|| "Task #{uuid} not found"
   end
 end
