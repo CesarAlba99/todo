@@ -1,8 +1,62 @@
 [
   {
-    "id": "abc",
-    "title": "My task",
-    "description": "The description of my first task",
+    "id": "550e8400-e29b-41d4-a716-446655440001",
+    "title": "My first task",
+    "description": "description of the first task",
+    "done": false
+  },
+  {
+    "id": "54470e73-2c2c-4d19-a2b1-f8ceaa88115f",
+    "title": "Update sim entities",
+    "description": "I have to update the sim main entities",
+    "done": false
+  },
+  {
+    "id": "956ee9e9-1c30-4412-bcd9-0f0fc98e254a",
+    "title": "Fix nags searching",
+    "description": "Fix the query in sql about the nags",
+    "done": false
+  },
+  {
+    "id": "4894b6bd-2899-43b6-bd94-11f2b7248d38",
+    "title": "Refactor customer",
+    "description": "Clean and optimize customer service module for better experience",
+    "done": false
+  },
+  {
+    "id": "88f700f7-412d-4b81-9d3c-328eae889071",
+    "title": "Implement testing",
+    "description": "Search and implement a way to do testing in vb.net",
+    "done": true
+  },
+  {
+    "id": "1301fb23-6c38-42ca-8b54-dc155175cba7",
+    "title": "Meeting backoffice",
+    "description": "Check the pending projects",
+    "done": false
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440007",
+    "title": "Report non converted",
+    "description": "Report about the non converted to Ids from assurance",
+    "done": false
+  },
+  {
+    "id": "0fef849d-09bb-4151-83ba-57d950841a08",
+    "title": "Create backup",
+    "description": "Generate a 2025 backup of my laptop",
+    "done": true
+  },
+  {
+    "id": "1ac1f847-b62f-4983-a323-08b38230624d",
+    "title": "Chatbot fixes",
+    "description": "Fix the incorrect messages in assurance flow",
+    "done": false
+  },
+  {
+    "id": "d6ca5f4c-c7a2-4054-b4ff-5c236f94624d",
+    "title": "Update tasks",
+    "description": "Update my new tasks",
     "done": false
   }
 ]

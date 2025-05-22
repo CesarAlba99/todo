@@ -9,4 +9,5 @@ gem 'pry', '~> 0.15.2'
 
 gem 'simplecov', '~> 0.22.0'
 
+gem 'erb'
 gem 'json', '~> 2.12'

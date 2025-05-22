@@ -2,4 +2,6 @@
 
 require_relative '../lib/todo'
 
-puts Todo.list_tasks
+# puts Todo.list_tasks
+
+puts Todo.find('88f700f7-412d-4b81-9d3c-328eae889071')
