@@ -4,4 +4,6 @@ require_relative '../lib/todo'
 
 # puts Todo.list_tasks
 
-puts Todo.find('88f700f7-412d-4b81-9d3c-328eae889071')
+puts Todo.find_task('54470e73-2c2c-4d19-a2b1-f8ceaa88115f')
+
+puts Todo.delete_task('550e8400-e29b-41d4-a716-446655440001')
