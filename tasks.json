@@ -1,11 +1,5 @@
 [
   {
-    "id": "550e8400-e29b-41d4-a716-446655440001",
-    "title": "My first task",
-    "description": "description of the first task",
-    "done": false
-  },
-  {
     "id": "54470e73-2c2c-4d19-a2b1-f8ceaa88115f",
     "title": "Update sim entities",
     "description": "I have to update the sim main entities",
@@ -58,5 +52,11 @@
     "title": "Update tasks",
     "description": "Update my new tasks",
     "done": false
+  },
+  {
+    "id": "c83b6b97-1c5c-4e20-939a-beb42a6f5f4d",
+    "title": "My first task2 edited",
+    "description": "Description added",
+    "done": true
   }
 ]
