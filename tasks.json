@@ -1,11 +1,5 @@
 [
   {
-    "id": "54470e73-2c2c-4d19-a2b1-f8ceaa88115f",
-    "title": "Update sim entities",
-    "description": "I have to update the sim main entities",
-    "done": false
-  },
-  {
     "id": "956ee9e9-1c30-4412-bcd9-0f0fc98e254a",
     "title": "Fix nags searching",
     "description": "Fix the query in sql about the nags",
@@ -58,5 +52,23 @@
     "title": "My first task2 edited",
     "description": "Description added",
     "done": true
+  },
+  {
+    "id": "7ba7847a-ef42-481f-b7e2-0022a61f31b6",
+    "title": "my first task edited",
+    "description": "Description added",
+    "done": false
+  },
+  {
+    "id": "391d7e14-7da8-475a-8e75-78c5b833be88",
+    "title": "My first task",
+    "description": "Description added",
+    "done": false
+  },
+  {
+    "id": "f2af778c-3429-4321-99c4-1bd65e3b783f",
+    "title": "My first task",
+    "description": "Description added",
+    "done": false
   }
 ]

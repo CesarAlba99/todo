@@ -1,17 +1,20 @@
 #!/usr/bin/env ruby
 
 require_relative '../lib/todo'
-# puts Todo.list_tasks
-# puts Todo.find_task('54470e73-2c2c-4d19-a2b1-f8ceaa88115f')
-# puts Todo.delete_task('550e8400-e29b-41d4-a716-446655440001')
 
-json_file = JsonFile.new
-todo = Todo.new json_file
+json_storage = JsonStorage.new
+todo = Todo.new json_storage
 
+puts 'LIST TASKS: '
 puts todo.list_tasks
 puts ' '
-# puts todo.find_task('550e8400-e29b-41d4-a716-446655440001')
-# puts ''
-# puts todo.delete_task('550e8400-e29b-41d4-a716-446655440001')
-# puts todo.create_task('My first task2', 'Description added')
-puts todo.edit_task('c83b6b97-1c5c-4e20-939a-beb42a6f5f4d', title: 'My first task2 edited', done: true)
+puts 'FIND TASKS: '
+puts ' '
+puts todo.find_task('54470e73-2c2c-4d19-a2b1-f8ceaa88115f')
+puts ''
+puts 'DELETE TASK: '
+puts todo.delete_task('54470e73-2c2c-4d19-a2b1-f8ceaa88115f')
+puts 'ADD_TASK: '
+puts todo.add_task('My first task', 'Description added')
+puts 'EDIT TASK:'
+puts todo.edit_task('7ba7847a-ef42-481f-b7e2-0022a61f31b6', title: 'my first task edited')
