@@ -26,7 +26,7 @@ class JsonStorage < Storage
 end
 
 class MemoryStorage < Storage
-  def initialize(path)
+  def initialize(path = 'tasks.json')
     @tasks = JSON.parse File.read(path)
   end
 
