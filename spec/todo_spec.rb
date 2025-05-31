@@ -1,6 +1,6 @@
 RSpec.describe Todo do
-  let(:json_storage) { JsonStorage.new }
-  let(:memory_storage) { MemoryStorage.new }
+  let(:json_storage) { JsonMyStorage.new }
+  let(:memory_storage) { MemoryMyStorage.new }
   let(:todo) { Todo.new memory_storage }
 
   describe '.list_tasks' do

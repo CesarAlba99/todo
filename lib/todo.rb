@@ -17,9 +17,7 @@ class JsonStorage < Storage
   end
 
   def read
-    JSON.parse File.read(@path)
-  end
-
+    JSON.parse File.read(@path), { 
   def write(tasks)
     File.write @path, JSON.pretty_generate(tasks)
   end
@@ -49,7 +47,7 @@ class Todo
   end
 
   def find_task(id)
-    list_tasks.find { |task| task['id'] == id }
+    list_tasks.find { |task| task[:id] == id }
   end
 
   def delete_task(id)
@@ -64,15 +62,10 @@ class Todo
     task_to_delete
   end
 
-  def add_task(title, description = nil)
+  def create_task(title, **attributes)
     tasks = list_tasks
 
-    new_task = {
-      'id' => SecureRandom.uuid,
-      'title' => title,
-      'description' => description,
-      'done' => false,
-    }
+    new_task = attributes.merge title: title # this order in case the user send also de title
 
     tasks << new_task
     @storage.write tasks
@@ -80,16 +73,13 @@ class Todo
     new_task
   end
 
-  def edit_task(id, title: nil, description: nil, done: nil)
+  def edit_task(id, **attributes)
     tasks = list_tasks
-    index_task_to_edit = tasks.find_index { |task| task['id'] == id }
+    index_task_to_edit = tasks.find_index { |task| task[:id] == id }
 
     return if index_task_to_edit.nil?
 
-    tasks[index_task_to_edit]['title'] = title unless title.nil?
-    tasks[index_task_to_edit]['description'] = description unless description.nil?
-    tasks[index_task_to_edit]['done'] = done unless done.nil?
-
+    tasks[index_task_to_edit].merge! attributes.merge!(id: id)
     @storage.write tasks
 
     tasks[index_task_to_edit]
