@@ -1,23 +1,5 @@
 [
   {
-    "id": "956ee9e9-1c30-4412-bcd9-0f0fc98e254a",
-    "title": "Fix nags searching",
-    "description": "Fix the query in sql about the nags",
-    "done": false
-  },
-  {
-    "id": "4894b6bd-2899-43b6-bd94-11f2b7248d38",
-    "title": "Refactor customer",
-    "description": "Clean and optimize customer service module for better experience",
-    "done": false
-  },
-  {
-    "id": "88f700f7-412d-4b81-9d3c-328eae889071",
-    "title": "Implement testing",
-    "description": "Search and implement a way to do testing in vb.net",
-    "done": true
-  },
-  {
     "id": "1301fb23-6c38-42ca-8b54-dc155175cba7",
     "title": "Meeting backoffice",
     "description": "Check the pending projects",
@@ -69,6 +51,28 @@
     "id": "f2af778c-3429-4321-99c4-1bd65e3b783f",
     "title": "My first task",
     "description": "Description added",
+    "done": false
+  },
+  {
+    "description": "I have to do my homework",
+    "id": "f15a63e9-9206-40dc-94e3-1610659916a4",
+    "title": "Do homework"
+  },
+  {
+    "description": "I have to do my homework",
+    "id": "b3399a1e-fab7-42a1-9f0c-e7b598c0e7ab",
+    "title": "Do homework"
+  },
+  {
+    "description": "I have to do my homework",
+    "id": "a4b06e68-5e65-4c61-bbc2-a7bfc6008652",
+    "title": "Do homework",
+    "done": false
+  },
+  {
+    "description": "I have to do my homework",
+    "id": "4ffd5d7f-04f7-42a0-9f74-3c7ec01f1aed",
+    "title": "Do homework",
     "done": false
   }
 ]

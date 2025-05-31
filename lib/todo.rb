@@ -1,5 +1,6 @@
 require 'json'
 require 'securerandom'
+require 'csv'
 
 class Storage
   def read
@@ -17,15 +18,17 @@ class JsonStorage < Storage
   end
 
   def read
-    JSON.parse File.read(@path), { 
+    JSON.parse File.read(@path), { symbolize_names: true }
+  end
+
   def write(tasks)
     File.write @path, JSON.pretty_generate(tasks)
   end
 end
 
 class MemoryStorage < Storage
-  def initialize(path = 'tasks.json')
-    @tasks = JSON.parse File.read(path)
+  def initialize(path = [])
+    @tasks = []
   end
 
   def read
@@ -34,6 +37,34 @@ class MemoryStorage < Storage
 
   def write(tasks)
     @tasks = tasks
+  end
+end
+
+class CsvStorage < Storage
+  def initialize(path = 'tasks.csv')
+    @path = path
+  end
+
+  def read
+    tasks = []
+
+    CSV.foreach @path, headers: true, header_converters: :symbol do |row|
+      task = row.to_h
+      task[:done] = task[:done] == 'true' if task.key? :done
+      tasks << task
+    end
+
+    tasks
+  end
+
+  def write(tasks)
+    headers = tasks.flat_map(&:keys).uniq
+
+    CSV.open @path, 'w', write_headers: true, headers: headers do |csv|
+      tasks.each do |task|
+        csv << headers.map { |header| task[header] }
+      end
+    end
   end
 end
 
@@ -65,7 +96,7 @@ class Todo
   def create_task(title, **attributes)
     tasks = list_tasks
 
-    new_task = attributes.merge title: title # this order in case the user send also de title
+    new_task = attributes.merge id: SecureRandom.uuid, title: title,done: false # this order in case the user send also de title
 
     tasks << new_task
     @storage.write tasks

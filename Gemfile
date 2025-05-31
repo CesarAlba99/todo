@@ -11,3 +11,5 @@ gem 'simplecov', '~> 0.22.0'
 
 gem 'erb'
 gem 'json', '~> 2.12'
+
+gem "csv", "~> 3.3"

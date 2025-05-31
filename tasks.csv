@@ -1,0 +1,6 @@
+id,title,description,done
+956ee9e9-1c30-4412-bcd9-0f0fc98e254a,Fix nags searching,Fix the query in sql about the nags,false
+4894b6bd-2899-43b6-bd94-11f2b7248d38,Refactor customer,Clean and optimize customer service module for better experience,false
+88f700f7-412d-4b81-9d3c-328eae889071,Implement testing,Search and implement a way to do testing in vb.net,true
+1301fb23-6c38-42ca-8b54-dc155175cba7,Meeting backoffice,Check the pending projects,false
+550e8400-e29b-41d4-a716-446655440007,Report non converted,Report about the non converted to Ids from assurance,false
