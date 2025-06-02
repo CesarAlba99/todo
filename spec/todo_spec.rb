@@ -2,7 +2,7 @@ RSpec.describe Todo do
   let(:json_storage) { JsonStorage.new }
   let(:memory_storage) { MemoryStorage.new }
   let(:csv_storage) { CsvStorage.new }
-  let(:todo) { Todo.new json_storage }
+  let(:todo) { Todo.new csv_storage }
 
   describe '.list_tasks' do
     let(:result) { todo.list_tasks }
@@ -13,7 +13,7 @@ RSpec.describe Todo do
   end
 
   describe '.find_task' do
-    let(:id) { '4894b6bd-2899-43b6-bd94-11f2b7248d38' }
+    let(:id) { '956ee9e9-1c30-4412-bcd9-0f0fc98e254a' }
     let(:result) { todo.find_task id }
 
     it 'finds the desired task' do
@@ -31,7 +31,7 @@ RSpec.describe Todo do
   end
 
   describe '.delete_task' do
-    let(:id) { '4894b6bd-2899-43b6-bd94-11f2b7248d38' }
+    let(:id) { '956ee9e9-1c30-4412-bcd9-0f0fc98e254a' }
     let(:result) { todo.delete_task id }
 
     it 'retrieves the deleted task' do
@@ -63,7 +63,7 @@ RSpec.describe Todo do
   end
 
   describe '.edit_task' do
-    let(:id) { '4894b6bd-2899-43b6-bd94-11f2b7248d38' }
+    let(:id) { '550e8400-e29b-41d4-a716-446655440007' }
     let(:title) { 'My first task edited' }
     let(:description) { 'Description of the first task edited' }
     let(:done) { true }
