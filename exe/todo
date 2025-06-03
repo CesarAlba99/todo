@@ -1,0 +1,54 @@
+#!/usr/bin/env ruby
+
+require 'thor'
+require_relative '../lib/todo'
+
+class TodoCLI < Thor
+  desc 'list', 'list all tasks'
+  def list
+    puts todo.list_tasks.to_json
+  end
+
+  desc 'find', 'Find task by ID'
+  def find(id)
+    task = todo.find_task id
+
+    return if task.nil?
+
+    puts task.to_json
+  end
+
+  desc 'delete', 'delete task by ID'
+  def delete(id)
+    puts "deleting task #{id}"
+  end
+
+  desc 'create task', 'create task with TITLE'
+  def create(title)
+    puts "creating task: #{title}"
+  end
+
+  desc 'edit ID', 'Edit task by ID'
+  def edit(id)
+    puts "Editing task: #{id}"
+  end
+
+  no_commands do
+    def todo
+      @todo ||= Todo.new storage
+    end
+
+    def storage
+      @storage ||= MemoryStorage.new([
+        {
+          id: '123',
+          title: 'Primer tarea',
+          description: 'descripcion',
+          done: false,
+        },
+      ])
+    end
+  end
+end
+
+TodoCLI.start ARGV

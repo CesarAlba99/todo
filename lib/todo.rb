@@ -27,8 +27,8 @@ class JsonStorage < Storage
 end
 
 class MemoryStorage < Storage
-  def initialize(path = [])
-    @tasks = []
+  def initialize(tasks = [])
+    @tasks ||= tasks
   end
 
   def read
@@ -58,7 +58,7 @@ class CsvStorage < Storage
   end
 
   def write(tasks)
-    headers = tasks.flat_map(&:keys).uniq
+    headers = tasks.first.keys # we use the keys as the headers
 
     CSV.open @path, 'w', write_headers: true, headers: headers do |csv|
       tasks.each do |task|
@@ -94,9 +94,11 @@ class Todo
   end
 
   def create_task(title, **attributes)
+    raise 'title is required to create a task' if !title.is_a?(String) || title.empty?
+
     tasks = list_tasks
 
-    new_task = attributes.merge id: SecureRandom.uuid, title: title,done: false # this order in case the user send also de title
+    new_task = attributes.merge id: SecureRandom.uuid, title: title, done: false # this order in case the user send also de title
 
     tasks << new_task
     @storage.write tasks
