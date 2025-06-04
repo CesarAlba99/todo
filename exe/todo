@@ -10,8 +10,9 @@ class TodoCLI < Thor
   end
 
   desc 'find', 'Find task by ID'
-  def find(id)
-    task = todo.find_task id
+  option :id, desc: 'Task ID', required: true
+  def find
+    task = todo.find_task options[:id]
 
     return if task.nil?
 
@@ -19,18 +20,52 @@ class TodoCLI < Thor
   end
 
   desc 'delete', 'delete task by ID'
-  def delete(id)
-    puts "deleting task #{id}"
+  option :id, desc: 'Task ID', required: true
+  def delete
+    task = todo.delete_task options[:id]
+
+    return if task.nil?
+
+    puts task.to_json
   end
 
   desc 'create task', 'create task with TITLE'
-  def create(title)
-    puts "creating task: #{title}"
+  option :title, desc: 'Task title', required: true
+  option :description, desc: 'Task description'
+  def create
+    task = todo.create_task(options[:title],
+                            description: options[:description],
+                            done: false)
+
+    return if task.nil?
+
+    puts task.to_json
   end
 
   desc 'edit ID', 'Edit task by ID'
-  def edit(id)
-    puts "Editing task: #{id}"
+  option :id, desc: 'Task ID', required: true
+  option :title, desc: 'New Task title'
+  option :description, desc: 'New task description'
+  option :done, desc: 'New task done', type: :boolean
+  option :nodone, desc: 'Mark task as incomplete', type: :boolean
+  def edit
+    attributes = {}
+    attributes[:done] = if options[:done]
+                          true
+                        elsif options[:nodone]
+                          false
+                        else
+                          false
+                        end
+
+    attributes[:title] = options[:title] if options[:title]
+    attributes[:description] = options[:description] if options[:description]
+
+    task = todo.edit_task(options[:id], **attributes)
+
+    return if task.nil?
+
+    puts task.to_json
   end
 
   no_commands do
@@ -44,6 +79,12 @@ class TodoCLI < Thor
           id: '123',
           title: 'Primer tarea',
           description: 'descripcion',
+          done: false,
+        },
+        {
+          id: '12345',
+          title: 'segunda tarea',
+          description: 'my description',
           done: false,
         },
       ])
