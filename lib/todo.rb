@@ -98,7 +98,7 @@ class Todo
 
     tasks = list_tasks
 
-    new_task = attributes.merge id: SecureRandom.uuid, title: title, done: false # this order in case the user send also de title
+    new_task = attributes.merge id: SecureRandom.uuid, title: title # this order in case the user send also de title
 
     tasks << new_task
     @storage.write tasks
@@ -112,7 +112,7 @@ class Todo
 
     return if index_task_to_edit.nil?
 
-    tasks[index_task_to_edit].merge! attributes.merge!(id: id)
+    tasks[index_task_to_edit].merge! attributes.merge(id: id)
     @storage.write tasks
 
     tasks[index_task_to_edit]
