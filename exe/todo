@@ -10,46 +10,30 @@ class TodoCLI < Thor
   end
 
   desc 'find', 'Find task by ID'
-  option :id, desc: 'Task ID', required: true
-  def find
-    task = todo.find_task options[:id]
+  def find(id)
+    task = todo.find_task id
 
     return if task.nil?
 
     puts task.to_json
   end
 
-  desc 'delete', 'delete task by ID'
-  option :id, desc: 'Task ID', required: true
-  def delete
-    task = todo.delete_task options[:id]
+  desc 'delete', 'Delete task by ID'
+  def delete(id)
+    task = todo.delete_task id
 
     return if task.nil?
 
     puts task.to_json
   end
 
-  desc 'create task', 'create task with TITLE'
-  option :title, desc: 'Task title', required: true
+  desc 'create', 'create task with TITLE'
   option :description, desc: 'Task description'
-  def create
-    task = todo.create_task(options[:title],
-                            description: options[:description],
-                            done: false)
+  option :nodone, desc: 'Mark a task as undone', type: :boolean
+  option :done, desc: 'Mark a task as done', type: :boolean
+  def create(title)
+    attributes = options.except(:nodone).transform_keys(&:to_sym)
 
-    return if task.nil?
-
-    puts task.to_json
-  end
-
-  desc 'edit ID', 'Edit task by ID'
-  option :id, desc: 'Task ID', required: true
-  option :title, desc: 'New Task title'
-  option :description, desc: 'New task description'
-  option :done, desc: 'New task done', type: :boolean
-  option :nodone, desc: 'Mark task as incomplete', type: :boolean
-  def edit
-    attributes = {}
     attributes[:done] = if options[:done]
                           true
                         elsif options[:nodone]
@@ -58,10 +42,27 @@ class TodoCLI < Thor
                           false
                         end
 
-    attributes[:title] = options[:title] if options[:title]
-    attributes[:description] = options[:description] if options[:description]
+    task = todo.create_task(title, **attributes)
 
-    task = todo.edit_task(options[:id], **attributes)
+    return if task.nil?
+
+    puts task.to_json
+  end
+
+  desc 'edit', 'Edit task by ID'
+  option :title, desc: 'New Task title'
+  option :description, desc: 'New task description'
+  option :done, desc: 'New task done', type: :boolean
+  option :nodone, desc: 'Mark task as incomplete', type: :boolean
+  def edit(id)
+    attributes = options.except(:nodone).transform_keys(&:to_sym)
+
+    if options[:done]
+      attributes[:done] = true
+    elsif options[:nodone]
+      attributes[:done] = false
+    end
+    task = todo.edit_task(id, **attributes)
 
     return if task.nil?
 
@@ -79,7 +80,7 @@ class TodoCLI < Thor
           id: '123',
           title: 'Primer tarea',
           description: 'descripcion',
-          done: false,
+          done: true,
         },
         {
           id: '12345',
