@@ -19,7 +19,7 @@ class TodoCLI < Thor
   end
 
   desc 'delete', 'Delete task by ID'
-  def delete(id)
+  def delete(id)                      #no optional arguments should be direct inputs, only optional are options 
     task = todo.delete_task id
 
     return if task.nil?
@@ -31,18 +31,17 @@ class TodoCLI < Thor
   option :description, desc: 'Task description'
   option :nodone, desc: 'Mark a task as undone', type: :boolean
   option :done, desc: 'Mark a task as done', type: :boolean
-  def create(title)
-    attributes = options.except(:nodone).transform_keys(&:to_sym)
+  def create(title)  
+    attributes = options.except(:nodone).transform_keys(&:to_sym)    #we use symbols in all the project
 
-    attributes[:done] = if options[:done]
-                          true
-                        elsif options[:nodone]
-                          false
-                        else
-                          false
-                        end
-
-    task = todo.create_task(title, **attributes)
+    if options[:done]
+      attributes[:done] = true
+    elsif options[:nodone]
+      attributes[:done] = false
+    else
+      attributes[:done] = false
+    end
+     task = todo.create_task(title, **attributes)
 
     return if task.nil?
 

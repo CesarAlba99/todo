@@ -60,7 +60,7 @@ RSpec.describe Todo do
     let(:title) { 'Do the dishes' }
     let(:description) { 'I have to do the dishes' }
     let(:done) { false }
-    let(:result) { todo.create_task title, description: description }
+    let(:result) { todo.create_task title, description: description, done: done }
 
     it 'creates a new task' do
       expect(result).to be_a(Hash).and include(

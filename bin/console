@@ -5,12 +5,12 @@ require_relative '../lib/todo'
 json_storage = JsonStorage.new
 todo = Todo.new json_storage
 
-# puts 'LIST TASKS: '
-# puts todo.list_tasks
+puts 'LIST TASKS: '
+puts todo.list_tasks
 # puts ' '
-puts 'FIND TASKS: '
+# puts 'FIND TASKS: '
 # puts ' '
-puts todo.find_task('0fef849d-09bb-4151-83ba-57d950841a08')
+# puts todo.find_task('0fef849d-09bb-4151-83ba-57d950841a08')
 # puts ''
 # puts 'DELETE TASK: '
 # puts todo.delete_task('54470e73-2c2c-4d19-a2b1-f8ceaa88115f')
