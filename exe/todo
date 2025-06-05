@@ -16,6 +16,9 @@ class TodoCLI < Thor
     return if task.nil?
 
     puts task.to_json
+
+  rescue TodoError => e
+    puts "ERROR: #{e.message}"
   end
 
   desc 'delete', 'Delete task by ID'
@@ -25,6 +28,8 @@ class TodoCLI < Thor
     return if task.nil?
 
     puts task.to_json
+  rescue TodoError => e
+    puts "ERROR: #{e.message}" 
   end
 
   desc 'create', 'create task with TITLE'
@@ -46,6 +51,8 @@ class TodoCLI < Thor
     return if task.nil?
 
     puts task.to_json
+  rescue TodoError => e
+    puts "ERROR: #{e.message}" 
   end
 
   desc 'edit', 'Edit task by ID'
@@ -66,6 +73,8 @@ class TodoCLI < Thor
     return if task.nil?
 
     puts task.to_json
+  rescue TodoError => e
+    puts "ERROR: #{e.message}" 
   end
 
   no_commands do
