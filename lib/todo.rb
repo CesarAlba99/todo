@@ -29,13 +29,13 @@ class JsonStorage < Storage
   def read
     JSON.parse File.read(@path), { symbolize_names: true }
   rescue Errno::ENOENT, Errno::EACCES, JSON::ParserError, StandardError => e
-    raise TodoFileReadError.new("Error reading #{@path}: #{e.message}")
+    raise TodoFileReadError.new("#{e.message}")
   end
 
   def write(tasks)
     File.write @path, JSON.pretty_generate(tasks)
   rescue Errno::ENOENT, Errno::EACCES, Errno::EROFS, StandardError => e
-    raise TodoFileWriteError.new("Error writing #{@path}: #{e.message}")
+    raise TodoFileWriteError.new("#{e.message}")
   end
 end
 
@@ -69,7 +69,7 @@ class CsvStorage < Storage
 
     tasks
   rescue Errno::ENOENT, Errno::EACCES, CSV::MalformedCSVError, StandardError => e
-    raise TodoFileReadError.new("Error reading #{@path}: #{e.message}")
+    raise TodoFileReadError.new("#{e.message}")
   end
 
   def write(tasks)
@@ -81,7 +81,7 @@ class CsvStorage < Storage
       end
     end
   rescue Errno::EACCES, Errno::ENOSPC, Errno::EROFS, StandardError => e
-    raise TodoFileWriteError.new("Error writing #{@path}: #{e.message}")
+    raise TodoFileWriteError.new("#{e.message}")
   end
 end
 

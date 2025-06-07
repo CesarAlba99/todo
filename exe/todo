@@ -7,6 +7,8 @@ class TodoCLI < Thor
   desc 'list', 'list all tasks'
   def list
     puts todo.list_tasks.to_json
+  rescue TodoError => e
+    puts "ERROR: #{e.message}"
   end
 
   desc 'find', 'Find task by ID'
@@ -83,20 +85,7 @@ class TodoCLI < Thor
     end
 
     def storage
-      @storage ||= MemoryStorage.new([
-        {
-          id: '123',
-          title: 'Primer tarea',
-          description: 'descripcion',
-          done: true,
-        },
-        {
-          id: '12345',
-          title: 'segunda tarea',
-          description: 'my description',
-          done: false,
-        },
-      ])
+      @storage ||= JsonStorage.new('taskss.json')
     end
   end
 end
