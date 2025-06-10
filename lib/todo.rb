@@ -28,14 +28,26 @@ class JsonStorage < Storage
 
   def read
     JSON.parse File.read(@path), { symbolize_names: true }
-  rescue Errno::ENOENT, Errno::EACCES, JSON::ParserError, StandardError => e
-    raise TodoFileReadError.new("#{e.message}")
+  rescue Errno::ENOENT => e
+    raise TodoFileReadError.new("File not found: #{e.message}")
+  rescue Errno::EACCES => e
+    raise TodoFileReadError.new("Permission denied for reading: #{e.message}")
+  rescue JSON::ParserError => e
+    raise TodoFileReadError.new("JSON parsing error: #{e.message}")
+  rescue StandardError => e
+    raise TodoFileReadError.new("Unexpected read error: #{e.message}")
   end
 
   def write(tasks)
     File.write @path, JSON.pretty_generate(tasks)
-  rescue Errno::ENOENT, Errno::EACCES, Errno::EROFS, StandardError => e
-    raise TodoFileWriteError.new("#{e.message}")
+  rescue Errno::ENOENT => e
+    raise TodoFileWriteError.new("File or directory not found: #{e.message}")
+  rescue Errno::EACCES => e
+    raise TodoFileWriteError.new("Permission denied for writing: #{e.message}")
+  rescue Errno::EROFS => e
+    raise TodoFileWriteError.new("Read-only file system: #{e.message}")
+  rescue StandardError => e
+    raise TodoFileWriteError.new("Unexpected write error: #{e.message}")
   end
 end
 
@@ -68,8 +80,14 @@ class CsvStorage < Storage
     end
 
     tasks
-  rescue Errno::ENOENT, Errno::EACCES, CSV::MalformedCSVError, StandardError => e
-    raise TodoFileReadError.new("#{e.message}")
+  rescue Errno::ENOENT => e
+    raise TodoFileReadError.new("File not found: #{e.message}")
+  rescue Errno::EACCES => e
+    raise TodoFileReadError.new("Permission denied for reading: #{e.message}")
+  rescue CSV::MalformedCSVError => e
+    raise TodoFileReadError.new("Malformed CSV file: #{e.message}")
+  rescue StandardError => e
+    raise TodoFileReadError.new("Unexpected read error: #{e.message}")
   end
 
   def write(tasks)
@@ -80,8 +98,14 @@ class CsvStorage < Storage
         csv << headers.map { |header| task[header] }
       end
     end
-  rescue Errno::EACCES, Errno::ENOSPC, Errno::EROFS, StandardError => e
-    raise TodoFileWriteError.new("#{e.message}")
+  rescue Errno::EACCES => e
+    raise TodoFileWriteError.new("Permission denied for writing: #{e.message}")
+  rescue Errno::ENOSPC => e
+    raise TodoFileWriteError.new("No space left on device: #{e.message}")
+  rescue Errno::EROFS => e
+    raise TodoFileWriteError.new("Read-only file system: #{e.message}")
+  rescue StandardError => e
+    raise TodoFileWriteError.new("Unexpected write error: #{e.message}")
   end
 end
 
