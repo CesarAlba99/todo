@@ -39,7 +39,7 @@ class JsonStorage < Storage
   end
 
   def write(tasks)
-    File.write @path, JSON.pretty_generate(tasks)
+  JSON.dump tasks, File.open(@path,'w')
   rescue Errno::ENOENT => e
     raise TodoFileWriteError.new("File or directory not found: #{e.message}")
   rescue Errno::EACCES => e

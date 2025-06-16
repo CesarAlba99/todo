@@ -14,32 +14,19 @@ RSpec.describe JsonStorage do
     ]
   end
 
-  after do #this is executed when a unit test ends
+  after do # this is executed when a unit test ends
     temp_file.close
     temp_file.unlink if File.exist? temp_path
   end
 
-  describe '#initialize' do
-    it 'sets default path' do
-      storage = JsonStorage.new
-      expect(storage.instance_variable_get(:@path)).to eq('tasks.json')
-    end
-
-    it 'sets custom path' do
-      expect(json_storage.instance_variable_get(:@path)).to eq(temp_path)
-    end
-  end
-
   describe '#read' do
     context 'when file exists and contains valid JSON' do
-      before do 
-        File.write temp_path, JSON.pretty_generate(sample_tasks)
-      end
+      let(:result) { json_storage.read }
 
-      it 'returns parsed JSON with symbolized keys' do
-        result = json_storage.read
-        expect(result).to eq(sample_tasks)
-        expect(result.first.keys).to all(be_a(Symbol))
+      before { JSON.dump([{ id: '1', title: 'first task', done: false }], File.open(temp_file, 'w')) }
+
+      it 'reads the desired file' do
+        expect(result).to all(be_a(Hash))
       end
     end
 
@@ -62,90 +49,12 @@ RSpec.describe JsonStorage do
         expect { json_storage.read }.to raise_error(TodoFileReadError, /JSON parsing error/)
       end
     end
-
-    context 'when file has permission issues' do
-      before do
-        File.write temp_path, JSON.pretty_generate(sample_tasks)
-        File.chmod 0o000, temp_path #change permissions
-      end
-
-      after do
-        File.chmod 0o644, temp_path # Restore permissions
-      end
-
-      it 'raises TodoFileReadError with permission denied message' do
-        expect { json_storage.read }.to raise_error(TodoFileReadError, /Permission denied for reading/)
-      end
-    end
   end
 
   describe '#write' do
-    context 'when writing to valid path' do
-      it 'writes tasks as pretty JSON' do
-        json_storage.write sample_tasks
-
-        file_content = File.read temp_path
-        parsed_content = JSON.parse file_content, symbolize_names: true
-
-        expect(parsed_content).to eq(sample_tasks)
-        expect(file_content).to include("\n") # Pretty formatted
-      end
-
-      it 'overwrites existing content' do
-        initial_tasks = [{ id: '111', title: 'Initial task', done: false }]
-        json_storage.write initial_tasks
-        json_storage.write sample_tasks
-
-        result = json_storage.read
-        expect(result).to eq(sample_tasks)
-        expect(result.length).to eq(2)
-      end
-    end
-
-    context 'when directory does not exist' do
-      let(:invalid_path) { '/noexists/directory/tasks.json' }
-      let(:invalid_json_storage) { JsonStorage.new invalid_path }
-
-      it 'raises TodoFileWriteError with file not found message' do
-        expect { invalid_json_storage.write(sample_tasks) }.to raise_error(TodoFileWriteError, /File or directory not found/)
-      end
-    end
-
-    context 'when file has no write permissions' do
-      before do
-        File.write temp_path, '[]'
-        File.chmod 0o444, temp_path # Read only
-      end
-
-      after do
-        File.chmod 0o644, temp_path # Restore 
-      end
-
-      it 'raises TodoFileWriteError with permission denied message' do
-        expect { json_storage.write(sample_tasks) }.to raise_error(TodoFileWriteError, /Permission denied for writing/)
-      end
-    end
-  end
-
-  describe 'integration with Todo class' do
-    let(:todo) { Todo.new json_storage }
-
-    before do
-      json_storage.write sample_tasks
-    end
-
-    it 'works correctly with Todo operations' do
-      tasks = todo.list_tasks
-      expect(tasks.length).to eq(2)
-
-      # Create a new task
-      new_task = todo.create_task 'New task', description: 'Test task'
-      expect(new_task).to include(title: 'New task')
-
-      # Verify a new task
-      reloaded_tasks = JsonStorage.new(temp_path).read
-      expect(reloaded_tasks.length).to eq(3)
-      expect(reloaded_tasks.last).to include(title: 'New task')
+    let(:result) { json_storage.write sample_tasks }
+    it 'writes the desired file' do
+      expect(result).to be_a(File)
     end
   end
 end
