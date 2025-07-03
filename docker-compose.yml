@@ -1,0 +1,16 @@
+version: "3.1"
+
+services:
+  redis:
+    image: redis
+    ports:
+      - 6381:6379
+  db:
+    image: kartoza/postgis:13.0
+    command: postgres -c 'max_connections=200'
+    environment:
+      POSTGRES_USER: username
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: todo
+    ports:
+      - 5433:5432
