@@ -15,3 +15,7 @@ gem 'json', '~> 2.12'
 gem "csv", "~> 3.3"
 
 gem "thor", "~> 1.3"
+
+gem "sequel", "~> 5.94"
+
+gem "pg", "~> 1.5"
