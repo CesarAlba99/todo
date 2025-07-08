@@ -7,7 +7,7 @@ RSpec.describe Todo do
      { id: '123456', title: 'Buy a new tv', description: 'Buy a new tv for me', done: false },]
   end
 
-  let(:memory_storage) { MemoryStorage.new sample_tasks }
+  let(:memory_storage) { Todo::Storage::MemoryStorage.new sample_tasks }
   let(:todo) { Todo.new memory_storage }
 
   let(:existing_id) { '12345' }

@@ -5,37 +5,52 @@ class Todo
         'DB_CONNECTION_URI',
         'postgres://username:password@localhost:5433/todo'
       )
-      attr_reader :db, :username
+      attr_reader :db, :username, :user_id
 
       def initialize(username, uri = DB_CONNECTION_URI)
         @db = Sequel.connect uri
         @username = username
+        @user_id = fetch_user_id
       end
+
+      GET_USER_ID = <<~SQL.freeze
+        SELECT Id FROM users WHERE username = :username
+      SQL
+      def fetch_user_id      
+        result = db.fetch(GET_USER_ID, { username: username }).first
+        result[:id]
+      end
+
       ALL_TASKS_QUERY = <<~SQL.freeze
         SELECT tasks.*
         FROM tasks
-          JOIN users ON users.id = tasks.user_id
-            AND users.deleted_at IS NULL
-        WHERE tasks.deleted_at IS NULL#{" "}
-            AND users.username = :username
+        WHERE deleted_at IS NULL
+              AND user_id = :user_id
       SQL
       def read
-        db.fetch(ALL_TASKS_QUERY, { username: username })
+        db.fetch(ALL_TASKS_QUERY, { user_id: user_id })
       end
 
       DELETE_USERS_TASKS = <<~SQL.freeze
         DELETE FROM tasks
-        USING users
-        WHERE users.id = tasks.user_id
-          AND users.username = :username
+        WHERE user_id = :user_id
       SQL
       CREATE_USERS_TASKS = <<~SQL.freeze
-
+        INSERT INTO tasks (user_id,title,description,done)
+        VALUES (user_id,:title,:description,:done)
       SQL
+      def write(tasks)
+        db.fetch(DELETE_USERS_TASKS, { user_id: user_id })
 
-      # IMPLEMENTAR WRITE Y QUE LOS FILTROS SEAN POR USER_ID(O SEA OBTENERLO Y PASARLO)
-      # ARREGLAR LOS SPECS(CORREGIR LOS REQUIRE CON LA NUEVA ORGANIZACIÓN)
-      def write(tasks); end
+        tasks.each do |_task|
+          db.fetch(CREATE_USERS_TASKS, {
+             user_id: user_id,
+             title: task[:title],
+             description: task[:description],
+             done: task[:done]
+          })
+        end
+      end
     end
   end
 end

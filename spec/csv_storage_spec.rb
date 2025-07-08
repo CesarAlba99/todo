@@ -2,10 +2,10 @@ require 'spec_helper'
 require 'tempfile'
 require 'csv'
 
-RSpec.describe CsvStorage do
+RSpec.describe Todo::Storage::CsvStorage do
   let(:temp_file) { Tempfile.new ['test_tasks', '.csv'] }
   let(:temp_path) { temp_file.path }
-  let(:csv_storage) { CsvStorage.new temp_path }
+  let(:csv_storage) { Todo::Storage::CsvStorage.new temp_path }
 
   let :sample_tasks do
     [
@@ -39,7 +39,7 @@ RSpec.describe CsvStorage do
       end
 
       it 'raises TodoFileReadError with file not found message' do
-        expect { csv_storage.read }.to raise_error(TodoFileReadError, /File not found/)
+        expect { csv_storage.read }.to raise_error(Todo::TodoFileReadError, /File not found/)
       end
     end
 
@@ -49,7 +49,7 @@ RSpec.describe CsvStorage do
       end
 
       it 'raises TodoFileReadError with malformed CSV message' do
-        expect { csv_storage.read }.to raise_error(TodoFileReadError, /Malformed CSV file/)
+        expect { csv_storage.read }.to raise_error(Todo::TodoFileReadError, /Malformed CSV file/)
       end
     end
   end

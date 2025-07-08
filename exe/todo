@@ -6,8 +6,16 @@ require_relative '../lib/todo'
 class TodoCLI < Thor
   desc 'list', 'list all tasks'
   def list
-    puts todo.list_tasks.to_json
-  rescue TodoError => e
+    tasks_list =  todo.list_tasks
+
+    
+    tasks_list.each do |task|
+      
+    puts "Title: #{task[:title]} Description: #{task[:description]} Done: #{ task[:done] ? "Dones" : "no done"}"
+
+    end
+
+  rescue Todo::TodoError => e
     puts "ERROR: #{e.message}"
   end
 
@@ -85,7 +93,7 @@ class TodoCLI < Thor
     end
 
     def storage
-      @storage ||= JsonStorage.new('taskss.json')
+      @storage ||= Todo::Storage::JsonStorage.new('tasks.json')
     end
   end
 end

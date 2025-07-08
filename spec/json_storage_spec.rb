@@ -2,10 +2,10 @@ require 'spec_helper'
 require 'tempfile'
 require 'json'
 
-RSpec.describe JsonStorage do
+RSpec.describe Todo::Storage::JsonStorage do
   let(:temp_file) { Tempfile.new ['test_tasks', '.json'] }
   let(:temp_path) { temp_file.path }
-  let(:json_storage) { JsonStorage.new temp_path }
+  let(:json_storage) { Todo::Storage::JsonStorage.new temp_path }
 
   let :sample_tasks do
     [
@@ -36,7 +36,7 @@ RSpec.describe JsonStorage do
       end
 
       it 'raises TodoFileReadError with file not found message' do
-        expect { json_storage.read }.to raise_error(TodoFileReadError, /File not found/)
+        expect { json_storage.read }.to raise_error(Todo::TodoFileReadError, /File not found/)
       end
     end
 
@@ -46,7 +46,7 @@ RSpec.describe JsonStorage do
       end
 
       it 'raises TodoFileReadError with JSON parsing error message' do
-        expect { json_storage.read }.to raise_error(TodoFileReadError, /JSON parsing error/)
+        expect { json_storage.read }.to raise_error(Todo::TodoFileReadError, /JSON parsing error/)
       end
     end
   end

@@ -4,6 +4,10 @@ SimpleCov.start do
 end
 
 require_relative '../lib/todo'
+# require_relative '../lib/todo/errors'
+# require_relative '../lib/todo/storage'
+# require_relative '../lib/todo/storage/csv_storage'
+# require_relative '../lib/todo/storage/json_storage'
 
 RSpec.configure do |config|
   config.expect_with :rspec do |expectations|
