@@ -16,39 +16,39 @@ class Todo
       GET_USER_ID = <<~SQL.freeze
         SELECT Id FROM users WHERE username = :username
       SQL
-      def fetch_user_id      
+      def fetch_user_id
         result = db.fetch(GET_USER_ID, { username: username }).first
         result[:id]
       end
 
       ALL_TASKS_QUERY = <<~SQL.freeze
-        SELECT tasks.*
+        SELECT *
         FROM tasks
         WHERE deleted_at IS NULL
-              AND user_id = :user_id
+              AND user_id = :user_id;
       SQL
       def read
-        db.fetch(ALL_TASKS_QUERY, { user_id: user_id })
+        db.fetch(ALL_TASKS_QUERY, { user_id: user_id }).all
       end
 
       DELETE_USERS_TASKS = <<~SQL.freeze
-        DELETE FROM tasks
-        WHERE user_id = :user_id
+        DELETE FROM tasks WHERE user_id = :user_id
       SQL
       CREATE_USERS_TASKS = <<~SQL.freeze
         INSERT INTO tasks (user_id,title,description,done)
-        VALUES (user_id,:title,:description,:done)
+        VALUES (:user_id,:title,:description,:done);
       SQL
       def write(tasks)
-        db.fetch(DELETE_USERS_TASKS, { user_id: user_id })
 
-        tasks.each do |_task|
-          db.fetch(CREATE_USERS_TASKS, {
-             user_id: user_id,
-             title: task[:title],
-             description: task[:description],
-             done: task[:done]
-          })
+        db.fetch(DELETE_USERS_TASKS, {user_id: user_id}).all
+
+        tasks.map do |task|
+          db.fetch(CREATE_USERS_TASKS,
+             {user_id: user_id, title: task[:title],
+              description: task[:description],
+              done: task[:done]}
+          ).all
+
         end
       end
     end
