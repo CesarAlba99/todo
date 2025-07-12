@@ -7,4 +7,7 @@ class Todo
 
   class TodoFileWriteError < TodoError
   end
+
+  class InvalidUsernameError < TodoError
+  end
 end

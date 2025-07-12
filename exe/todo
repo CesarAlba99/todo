@@ -6,15 +6,9 @@ require_relative '../lib/todo'
 class TodoCLI < Thor
   desc 'list', 'list all tasks'
   def list
-    tasks_list =  todo.list_tasks
-
-    
-    tasks_list.each do |task|
-      
-    puts "Title: #{task[:title]} Description: #{task[:description]} Done: #{ task[:done] ? "Dones" : "no done"}"
-
+    todo.list_tasks.map do |task|
+      puts task.to_json
     end
-
   rescue Todo::TodoError => e
     puts "ERROR: #{e.message}"
   end
@@ -26,43 +20,42 @@ class TodoCLI < Thor
     return if task.nil?
 
     puts task.to_json
-
   rescue TodoError => e
     puts "ERROR: #{e.message}"
   end
 
   desc 'delete', 'Delete task by ID'
-  def delete(id)                      #no optional arguments should be direct inputs, only optional are options 
+  def delete(id) # no optional arguments should be direct inputs, only optional are options
     task = todo.delete_task id
 
     return if task.nil?
 
     puts task.to_json
   rescue TodoError => e
-    puts "ERROR: #{e.message}" 
+    puts "ERROR: #{e.message}"
   end
 
   desc 'create', 'create task with TITLE'
   option :description, desc: 'Task description'
   option :nodone, desc: 'Mark a task as undone', type: :boolean
   option :done, desc: 'Mark a task as done', type: :boolean
-  def create(title)  
-    attributes = options.except(:nodone).transform_keys(&:to_sym)    #we use symbols in all the project
+  def create(title)
+    attributes = options.except(:nodone).transform_keys(&:to_sym) # we use symbols in all the project
 
-    if options[:done]
-      attributes[:done] = true
-    elsif options[:nodone]
-      attributes[:done] = false
-    else
-      attributes[:done] = false
-    end
-     task = todo.create_task(title, **attributes)
+    attributes[:done] = if options[:done]
+                          true
+                        elsif options[:nodone]
+                          false
+                        else
+                          false
+                        end
+    task = todo.create_task(title, **attributes)
 
     return if task.nil?
 
     puts task.to_json
   rescue TodoError => e
-    puts "ERROR: #{e.message}" 
+    puts "ERROR: #{e.message}"
   end
 
   desc 'edit', 'Edit task by ID'
@@ -84,16 +77,27 @@ class TodoCLI < Thor
 
     puts task.to_json
   rescue TodoError => e
-    puts "ERROR: #{e.message}" 
+    puts "ERROR: #{e.message}"
   end
 
   no_commands do
     def todo
-      @todo ||= Todo.new storage
+      @todo ||= Todo.new username
+    rescue Todo::InvalidUsernameError => e
+      response = ask "Username not found (#{username}), should I create it?[Y/n]"
+      raise e unless ['y', 'Y', ''].include? response
+
+      @todo = Todo.new username, force: true
     end
 
-    def storage
-      @storage ||= Todo::Storage::JsonStorage.new('tasks.json')
+    def username
+      return @username unless @username.nil?
+
+      username = ENV.fetch 'TODO_USERNAME', nil
+
+      raise Todo::TodoError.new('Please set TODO_USERNAME env variable') if username.nil? || username.empty?
+
+      @username = username
     end
   end
 end

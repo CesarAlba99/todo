@@ -39,16 +39,13 @@ class Todo
         VALUES (:user_id,:title,:description,:done);
       SQL
       def write(tasks)
-
-        db.fetch(DELETE_USERS_TASKS, {user_id: user_id}).all
+        db.fetch(DELETE_USERS_TASKS, { user_id: user_id }).all
 
         tasks.map do |task|
           db.fetch(CREATE_USERS_TASKS,
-             {user_id: user_id, title: task[:title],
-              description: task[:description],
-              done: task[:done]}
-          ).all
-
+                   { user_id: user_id, title: task[:title],
+                     description: task[:description],
+                     done: task[:done], }).all
         end
       end
     end
