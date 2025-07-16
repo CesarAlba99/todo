@@ -61,6 +61,45 @@ class Todo
       Todo::Entities::Task.new record
     end
 
+    DELETE_TASK_BY_ID = <<~SQL.freeze
+      UPDATE tasks SET deleted_at = NOW()
+                   WHERE id = :id
+      RETURNING *;
+    SQL
+    def delete_task_by_id(id)
+      record = @db.fetch(DELETE_TASK_BY_ID, { id: id }).first
+      return if record.nil?
+
+      Todo::Entities::Task.new record
+    end
+
+    CREATE_USER_TASK = <<~SQL.freeze
+      INSERT INTO tasks (user_id,title,description,deadline,done)
+      VALUES (:user_id,:title,:description,:deadline,:done)
+      RETURNING *;
+    SQL
+    def create_user_task(new_task)
+      record = @db.fetch(CREATE_USER_TASK, new_task).first
+
+      return if record.nil?
+
+      Todo::Entities::Task.new record
+    end
+
+    UPDATE_USER_TASK = <<~SQL.freeze
+      UPDATE tasks SET title = :title, description = :description,deadline = :deadline, done = :done
+      WHERE id = :id
+      RETURNING *
+    SQL
+
+    def edit_user_task_by_id(task)
+      record = @db.fetch(UPDATE_USER_TASK, task).first
+
+      return if record.nil?
+
+      Todo::Entities::Task.new record
+    end
+
     private
 
     attr_reader :db

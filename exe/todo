@@ -7,7 +7,7 @@ class TodoCLI < Thor
   desc 'list', 'list all tasks'
   def list
     todo.list_tasks.map do |task|
-      puts task.to_json
+      puts task.record.to_json
     end
   rescue Todo::TodoError => e
     puts "ERROR: #{e.message}"
@@ -20,18 +20,18 @@ class TodoCLI < Thor
     return if task.nil?
 
     puts task.to_json
-  rescue TodoError => e
+  rescue Todo::TodoError => e
     puts "ERROR: #{e.message}"
   end
 
   desc 'delete', 'Delete task by ID'
-  def delete(id) # no optional arguments should be direct inputs, only optional are options
+  def delete(id)
     task = todo.delete_task id
 
     return if task.nil?
 
     puts task.to_json
-  rescue TodoError => e
+  rescue Todo::TodoError => e
     puts "ERROR: #{e.message}"
   end
 
@@ -49,12 +49,13 @@ class TodoCLI < Thor
                         else
                           false
                         end
+
     task = todo.create_task(title, **attributes)
 
     return if task.nil?
 
     puts task.to_json
-  rescue TodoError => e
+  rescue Todo::TodoError => e
     puts "ERROR: #{e.message}"
   end
 
@@ -76,7 +77,7 @@ class TodoCLI < Thor
     return if task.nil?
 
     puts task.to_json
-  rescue TodoError => e
+  rescue Todo::TodoError => e
     puts "ERROR: #{e.message}"
   end
 

@@ -10,8 +10,6 @@ class Todo
       def method_missing(method, args = nil)
         super unless record.key? method
 
-        return unless record.key? method
-
         @record[method]
       end
 

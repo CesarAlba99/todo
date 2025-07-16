@@ -26,45 +26,46 @@ class Todo
   end
 
   def find_task(id)
-    # list_tasks.find { |task| task[:id] == id }
     repository.find_task_by_id id
   end
 
   def delete_task(id)
-    tasks = list_tasks
+    list_tasks
     task_to_delete = find_task id
 
     return if task_to_delete.nil?
 
-    tasks.delete task_to_delete
-    @storage.write tasks
-
-    task_to_delete
+    repository.delete_task_by_id task_to_delete.id
   end
 
   def create_task(title, **attributes)
     raise 'title is required to create a task' if !title.is_a?(String) || title.empty?
 
-    tasks = list_tasks
+    new_task = (attributes.merge title: title).merge user_id: user.id
 
-    new_task = attributes.merge id: SecureRandom.uuid, title: title # this order in case the user send also de title
-
-    tasks << new_task
-    @storage.write tasks
-
-    new_task
+    repository.create_user_task({
+      user_id: new_task[:user_id],
+      title: new_task[:title],
+      description: new_task.fetch(:description, nil),
+      deadline: new_task.fetch(:deadline, nil),
+      done: new_task.fetch(:done, false),
+    })
   end
 
   def edit_task(id, **attributes)
-    tasks = list_tasks
-    index_task_to_edit = tasks.find_index { |task| task[:id] == id }
+    task = repository.find_task_by_id id
 
-    return if index_task_to_edit.nil?
+    return if task.nil?
 
-    tasks[index_task_to_edit].merge! attributes.merge(id: id)
-    @storage.write tasks
+    attributes.merge! id: task.id
 
-    tasks[index_task_to_edit]
+    repository.edit_user_task_by_id({
+      id: attributes[:id],
+      title: attributes.fetch(:title, task.title),
+      description: attributes.fetch(:description, task.description),
+      deadline: attributes.fetch(:deadline, task.deadline),
+      done: attributes.fetch(:done, task.done),
+    })
   end
 
   private
