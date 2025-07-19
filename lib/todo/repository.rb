@@ -14,7 +14,6 @@ class Todo
       WHERE username = :username
         AND deleted_at IS NULL
     SQL
-
     def find_user_by_username(username)
       record = @db.fetch(FIND_USER_BY_USERNAME, { username: username }).first
       return if record.nil?
@@ -28,7 +27,6 @@ class Todo
       ON CONFLICT(username) DO UPDATE SET deleted_at = NULL
       RETURNING *
     SQL
-
     def create_user(username)
       record = @db.fetch(CREATE_USER, { username: username }).first
       return if record.nil?
@@ -91,7 +89,6 @@ class Todo
       WHERE id = :id
       RETURNING *
     SQL
-
     def edit_user_task_by_id(task)
       record = @db.fetch(UPDATE_USER_TASK, task).first
 
@@ -99,6 +96,33 @@ class Todo
 
       Todo::Entities::Task.new record
     end
+
+    FIND_PROJECT_BY_NAME = <<~SQL.freeze
+      SELECT * FROM projects
+      WHERE name = :name
+        AND deleted_at IS NULL
+    SQL
+    def find_project_by_name(name)
+      record = @db.fetch(FIND_PROJECT_BY_NAME, { name: name }).first
+      return if record.nil?
+
+      Todo::Entities::Project.new record
+    end
+
+    CREATE_PROJECT = <<~SQL.freeze
+      INSERT INTO projects (name)
+      VALUES (:name)
+      ON CONFLICT(name) DO UPDATE SET deleted_at = NULL
+      RETURNING *
+    SQL
+    def create_project(name)
+      record = @db.fetch(CREATE_PROJECT, { name: name }).first
+      return if record.nil?
+
+      Todo::Entities::Project.new record
+    end
+
+
 
     private
 
