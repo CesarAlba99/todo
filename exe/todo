@@ -39,6 +39,7 @@ class TodoCLI < Thor
   option :description, desc: 'Task description'
   option :nodone, desc: 'Mark a task as undone', type: :boolean
   option :done, desc: 'Mark a task as done', type: :boolean
+  option :deadline, desc: 'Set deadline to a task'
   def create(title)
     attributes = options.except(:nodone).transform_keys(&:to_sym) # we use symbols in all the project
 
@@ -64,6 +65,7 @@ class TodoCLI < Thor
   option :description, desc: 'New task description'
   option :done, desc: 'New task done', type: :boolean
   option :nodone, desc: 'Mark task as incomplete', type: :boolean
+  option :deadline, desc: 'Set deadline to a task'
   def edit(id)
     attributes = options.except(:nodone).transform_keys(&:to_sym)
 
