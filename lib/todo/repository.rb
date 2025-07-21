@@ -72,8 +72,8 @@ class Todo
     end
 
     CREATE_USER_TASK = <<~SQL.freeze
-      INSERT INTO tasks (user_id,title,description,deadline,done)
-      VALUES (:user_id,:title,:description,:deadline,:done)
+      INSERT INTO tasks (user_id,title,description,deadline,done,project_id)
+      VALUES (:user_id,:title,:description,:deadline,:done,:project_id)
       RETURNING *;
     SQL
     def create_user_task(new_task)
@@ -85,7 +85,7 @@ class Todo
     end
 
     UPDATE_USER_TASK = <<~SQL.freeze
-      UPDATE tasks SET title = :title, description = :description,deadline = :deadline, done = :done
+      UPDATE tasks SET title = :title, description = :description,deadline = :deadline, done = :done, project_id = :project_id
       WHERE id = :id
       RETURNING *
     SQL
@@ -99,30 +99,28 @@ class Todo
 
     FIND_PROJECT_BY_NAME = <<~SQL.freeze
       SELECT * FROM projects
-      WHERE name = :name
+      WHERE name = :name 
+        AND user_id = :user_id
         AND deleted_at IS NULL
     SQL
-    def find_project_by_name(name)
-      record = @db.fetch(FIND_PROJECT_BY_NAME, { name: name }).first
-      return if record.nil?
+    def find_project_by_name(user_id,name)
+      record = @db.fetch(FIND_PROJECT_BY_NAME, {user_id: user_id, name: name }).first
+      return nil if record.nil?
 
       Todo::Entities::Project.new record
     end
 
     CREATE_PROJECT = <<~SQL.freeze
-      INSERT INTO projects (name)
-      VALUES (:name)
-      ON CONFLICT(name) DO UPDATE SET deleted_at = NULL
+      INSERT INTO projects (user_id,name)
+      VALUES (:user_id,:name)
       RETURNING *
     SQL
-    def create_project(name)
-      record = @db.fetch(CREATE_PROJECT, { name: name }).first
+    def create_project(user_id, name)
+      record = @db.fetch(CREATE_PROJECT, { user_id: user_id, name: name }).first
       return if record.nil?
 
       Todo::Entities::Project.new record
     end
-
-
 
     private
 

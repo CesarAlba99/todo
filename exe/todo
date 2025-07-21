@@ -40,9 +40,9 @@ class TodoCLI < Thor
   option :nodone, desc: 'Mark a task as undone', type: :boolean
   option :done, desc: 'Mark a task as done', type: :boolean
   option :deadline, desc: 'Set deadline to a task'
-  option :project,desc: 'Project name'
+  option :project, desc: 'Project name'
   def create(title)
-    attributes = options.except(:nodone).transform_keys(&:to_sym) 
+    attributes = options.except(:nodone).transform_keys(&:to_sym)
 
     attributes[:done] = if options[:done]
                           true
@@ -51,6 +51,18 @@ class TodoCLI < Thor
                         else
                           false
                         end
+    if attributes.key?(:project)
+     project = todo.find_project_by_name attributes[:project]
+
+      if project.nil?
+        response = ask "Project not found (#{attributes[:project]}), should I creat it?[Y/n]"
+        raise 'Invalid Project name' unless ['y', 'Y', ''].include? response
+
+        project = todo.create_project attributes[:project]
+      end
+
+      attributes.merge! project_id: project.id
+    end
 
     task = todo.create_task(title, **attributes)
 
@@ -76,6 +88,20 @@ class TodoCLI < Thor
     elsif options[:nodone]
       attributes[:done] = false
     end
+
+    if attributes.key?(:project)
+     project = todo.find_project_by_name attributes[:project]
+
+      if project.nil?
+        response = ask "Project not found (#{attributes[:project]}), should I creat it?[Y/n]"
+        raise 'Invalid Project name' unless ['y', 'Y', ''].include? response
+
+        project = todo.create_project attributes[:project]
+      end
+
+      attributes.merge! project_id: project.id
+    end
+
     task = todo.edit_task(id, **attributes)
 
     return if task.nil?

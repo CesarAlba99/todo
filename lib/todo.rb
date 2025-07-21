@@ -49,6 +49,7 @@ class Todo
       description: new_task.fetch(:description, nil),
       deadline: new_task.fetch(:deadline, nil),
       done: new_task.fetch(:done, false),
+      project_id: new_task.fetch(:project_id, nil),
     })
   end
 
@@ -65,7 +66,16 @@ class Todo
       description: attributes.fetch(:description, task.description),
       deadline: attributes.fetch(:deadline, task.deadline),
       done: attributes.fetch(:done, task.done),
+      project_id: attributes.fetch(:project_id, nil),
     })
+  end
+
+  def find_project_by_name(name)
+    repository.find_project_by_name user.id,name
+  end
+
+  def create_project(name)
+    repository.create_project user.id, name
   end
 
   private
