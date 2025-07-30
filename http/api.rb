@@ -39,7 +39,7 @@ class Api < Sinatra::Base
     return nil if epoch_string.nil? || epoch_string.empty?
 
     Time.at epoch_string.to_i
-  rescue ArgumentError
+  rescue StandardError
     nil
   end
 
@@ -127,4 +127,55 @@ class Api < Sinatra::Base
   rescue StandardError => e
     error_response 400, e.message
   end
+
+  put '/task/:id' do
+  begin
+    task_id = params[:id]
+    error_response(400, 'task id is required') if task_id.nil? || task_id.empty?
+    
+    username = @json_params['username']
+    error_response(400, 'username is required') if username.nil? || username.empty?
+    
+    todo = get_todo_instance username
+    
+    existing_task = todo.find_task(task_id)
+    error_response(404, 'Task not found') if existing_task.nil?
+    
+    title = @json_params['title']
+    description = @json_params['description'] 
+    done = @json_params['done']
+    project_id = @json_params['project_id']
+    deadline = @json_params['deadline']
+    
+    unless done.nil?
+      done = case done.to_s.downcase
+             when 'true', 't', '1' then true
+             when 'false', 'f', '0' then false
+             else
+               raise "Invalid parameter value #{done}. Expected: true, false."
+             end
+    end
+    
+    unless deadline.nil?
+        deadline_epoch = deadline
+        deadline = parse_epoch_to_timestamp(deadline.to_s)
+        raise "Invalid deadline, expected a valid epoch: #{deadline_epoch}" if deadline.nil?
+    end
+    
+    update_attributes = {}
+    update_attributes[:title] = title if title
+    update_attributes[:description] = description if @json_params.key?('description')
+    update_attributes[:done] = done unless done.nil?
+    update_attributes[:project_id] = project_id if @json_params.key?('project_id')
+    update_attributes[:deadline] = deadline if @json_params.key?('deadline')
+    
+    updated_task = todo.edit_task(task_id, **update_attributes)
+    error_response(500, 'Failed to update task') if updated_task.nil?
+    
+    { result: updated_task }.to_json
+    
+  rescue StandardError => e
+    error_response 400, e.message
+  end
+end
 end
