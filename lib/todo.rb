@@ -21,8 +21,8 @@ class Todo
     @user = repository.create_user username
   end
 
-  def list_tasks
-    repository.list_tasks_by_user_id user.id
+  def list_tasks(filters = {})
+    repository.list_tasks_by_user_id user.id, filters
   end
 
   def find_task(id)
@@ -71,7 +71,7 @@ class Todo
   end
 
   def find_project_by_name(name)
-    repository.find_project_by_name user.id,name
+    repository.find_project_by_name user.id, name
   end
 
   def create_project(name)

@@ -33,6 +33,16 @@ class Todo
 
       Todo::Entities::User.new record
     end
+    LIST_TASKS_BY_USER_ID_WITH_FILTERS = <<~SQL.freeze
+      SELECT * FROM tasks
+        WHERE user_id = :user_id
+          AND deleted_at IS NULL
+          AND (:title IS NULL OR LOWER(title) LIKE LOWER(:title_pattern))
+          AND (:done IS NULL OR done = :done)
+          AND (:start_deadline IS NULL OR deadline >= :start_deadline)
+          AND (:end_deadline IS NULL OR deadline <= :end_deadline)
+        ORDER BY created_at DESC
+    SQL
 
     LIST_TASKS_BY_USER_ID = <<~SQL.freeze
       SELECT * FROM tasks
@@ -40,8 +50,33 @@ class Todo
             AND deleted_at IS NULL
     SQL
 
-    def list_tasks_by_user_id(user_id)
-      records = @db.fetch(LIST_TASKS_BY_USER_ID, { user_id: user_id }).all
+    def list_tasks_by_user_id(user_id, filters = {})
+      has_filters = filters.values.any? { |value| !value.nil? }
+
+      if has_filters
+
+        title = filters[:title]
+        done = filters[:done]
+        start_deadline = filters[:start_deadline]
+        end_deadline = filters[:end_deadline]
+
+        query_params = {
+          user_id: user_id,
+          title: title,
+          title_pattern: title ? "%#{title}%" : nil,
+          done: done,
+          start_deadline: start_deadline,
+          end_deadline: end_deadline,
+        }
+
+        records = @db.fetch(LIST_TASKS_BY_USER_ID_WITH_FILTERS, query_params).all
+      
+      else
+
+        records = @db.fetch(LIST_TASKS_BY_USER_ID, { user_id: user_id }).all
+      
+      end
+
       return [] if records.nil? || records.empty?
 
       records.map { |record| Entities::Task.new record }
@@ -99,12 +134,12 @@ class Todo
 
     FIND_PROJECT_BY_NAME = <<~SQL.freeze
       SELECT * FROM projects
-      WHERE name = :name 
+      WHERE name = :name#{" "}
         AND user_id = :user_id
         AND deleted_at IS NULL
     SQL
-    def find_project_by_name(user_id,name)
-      record = @db.fetch(FIND_PROJECT_BY_NAME, {user_id: user_id, name: name }).first
+    def find_project_by_name(user_id, name)
+      record = @db.fetch(FIND_PROJECT_BY_NAME, { user_id: user_id, name: name }).first
       return nil if record.nil?
 
       Todo::Entities::Project.new record
