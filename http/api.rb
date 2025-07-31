@@ -14,8 +14,9 @@ class Api < Sinatra::Base
         body_content = request.body.read
         @json_params = JSON.parse(body_content) unless body_content.empty?
       rescue StandardError => e
-        puts "Error processing JSON: #{e.message}"
-        @json_params = {}
+        # puts "Error processing JSON: #{e.message}"
+        error_response(400, "Error processing JSON: #{e.message}")
+        # @json_params = {}
       end
     end
   end
@@ -90,6 +91,9 @@ class Api < Sinatra::Base
   post '/tasks' do
     username = @json_params['username']
 
+# require 'pry'
+# binding.pry
+    
     title = @json_params['title']
     error_response 400, 'title is required' if title.nil? || title.empty?
 
