@@ -133,6 +133,7 @@ class Api < Sinatra::Base
     task_id = params[:id]
     error_response(400, 'task id is required') if task_id.nil? || task_id.empty?
     
+    validate_uuid(task_id)
     username = @json_params['username']
     error_response(400, 'username is required') if username.nil? || username.empty?
     
@@ -177,5 +178,57 @@ class Api < Sinatra::Base
   rescue StandardError => e
     error_response 400, e.message
   end
+end
+
+get '/task/:id' do
+  begin
+    task_id = params[:id]
+    error_response(400, 'task id is required') if task_id.nil? || task_id.empty?
+    
+    validate_uuid(task_id)
+    username = params['username'] 
+    error_response(400, 'username parameter is required') if username.nil? || username.empty?
+    
+    todo = get_todo_instance username
+    
+    task = todo.find_task(task_id)
+    error_response(404, 'Task not found') if task.nil?
+    
+    { result: task }.to_json
+  rescue StandardError => e
+    error_response 400, e.message
+  end
+end
+
+delete '/task/:id' do
+  begin
+    task_id = params[:id]
+    error_response(400, 'task id is required') if task_id.nil? || task_id.empty?
+    
+    validate_uuid(task_id)
+    username = params['username'] 
+    error_response(400, 'username parameter is required') if username.nil? || username.empty?
+    
+    todo = get_todo_instance username
+    
+    existing_task = todo.find_task(task_id)
+    error_response(404, 'Task not found') if existing_task.nil?
+    
+    deleted_task = todo.delete_task(task_id)
+    
+    { result: deleted_task }.to_json
+  rescue StandardError => e
+    error_response 400, e.message
+  end
+end
+def valid_uuid?(uuid)
+  uuid_regex = /\A[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\z/i
+  
+  return false if uuid.nil? || uuid.empty?
+  uuid_regex.match?(uuid)
+end
+
+def validate_uuid(uuid)
+  error_response(400, "Invalid UUID format.") unless valid_uuid?(uuid)
 end
 end
