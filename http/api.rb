@@ -8,22 +8,23 @@ class Api < Sinatra::Base
 
   before do
     @json_params = {}
-
-    if request.content_type == 'application/json'
-      begin
-        body_content = request.body.read
-        @json_params = JSON.parse(body_content) unless body_content.empty?
-      rescue StandardError => e
-        # puts "Error processing JSON: #{e.message}"
-        error_response(400, "Error processing JSON: #{e.message}")
-        # @json_params = {}
-      end
+    unless request.content_type == 'application/json'
+      error_response(400,"Content-Type must be application/json")
+    end
+    begin
+      body_content = request.body.read
+      @json_params = JSON.parse(body_content) unless body_content.empty?
+    rescue JSON::ParserError => e 
+      error_response(400, "Error processing JSON: #{e.message}")
     end
   end
 
-  error do
+  error do #with this we can handle each error from all methods
     e = env['sinatra.error']
     [500, { error: { message: e.message } }.to_json]
+  end
+  error JSON::ParserError do 
+    [500, { error: { message: "Invalid JSON request" } }.to_json]
   end
 
   def get_todo_instance(username)
@@ -69,7 +70,7 @@ class Api < Sinatra::Base
     unless start_deadline.nil?
       start_epoch = start_deadline
       start_deadline = parse_epoch_to_timestamp start_deadline
-      raise "Invalid start_deadline, expected a valide epoch: #{start_epoch}" if start_deadline.nil?
+      raise "Invalid start_deadline, expected a valid epoch: #{start_epoch}" if start_deadline.nil?
     end
 
     unless end_deadline.nil?
@@ -189,7 +190,7 @@ get '/task/:id' do
     task_id = params[:id]
     error_response(400, 'task id is required') if task_id.nil? || task_id.empty?
     
-    validate_uuid(task_id)
+    validate_uuid!(task_id)
     username = params['username'] 
     error_response(400, 'username parameter is required') if username.nil? || username.empty?
     
@@ -232,7 +233,7 @@ def valid_uuid?(uuid)
   uuid_regex.match?(uuid)
 end
 
-def validate_uuid(uuid)
+def validate_uuid!(uuid)
   error_response(400, "Invalid UUID format.") unless valid_uuid?(uuid)
 end
 end
