@@ -33,17 +33,17 @@ class Todo
 
       Todo::Entities::User.new record
     end
-    LIST_TASKS_BY_USER_ID_WITH_FILTERS = <<~SQL.freeze
-      SELECT * FROM tasks
-        WHERE user_id = :user_id
-          AND deleted_at IS NULL
-          AND (:title IS NULL OR LOWER(title) LIKE LOWER(:title_pattern))
-          AND (:done IS NULL OR done = :done)
-          AND (:start_deadline IS NULL OR deadline >= :start_deadline)
-          AND (:end_deadline IS NULL OR deadline <= :end_deadline)
-        ORDER BY created_at DESC
-    SQL
-
+    # LIST_TASKS_BY_USER_ID_WITH_FILTERS = <<~SQL.freeze
+    #   SELECT * FROM tasks
+    #     WHERE user_id = :user_id
+    #       AND deleted_at IS NULL
+    #       AND (:title IS NULL OR LOWER(title) LIKE LOWER(:title_pattern))
+    #       AND (:done IS NULL OR done = :done)
+    #       AND (:start_deadline IS NULL OR deadline >= :start_deadline)
+    #       AND (:end_deadline IS NULL OR deadline < :end_deadline)
+    #     ORDER BY created_at DESC
+    # SQL
+    #
     LIST_TASKS_BY_USER_ID = <<~SQL.freeze
       SELECT * FROM tasks
       WHERE user_id = :user_id
@@ -51,35 +51,35 @@ class Todo
     SQL
 
     def list_tasks_by_user_id(user_id, filters = {})
-      has_filters = filters.values.any? { |value| !value.nil? }
+      conditions = []
 
-      if has_filters
+      title, done, start_deadline, end_deadline = filters.values_at(
+        :title,
+        :done,
+        :start_deadline,
+        :end_deadline
+      )
 
-        title = filters[:title]
-        done = filters[:done]
-        start_deadline = filters[:start_deadline]
-        end_deadline = filters[:end_deadline]
+      conditions << 'title LIKE :title' unless title.nil?
+      conditions << 'done = :done' unless done.nil?
 
-        query_params = {
-          user_id: user_id,
-          title: title,
-          title_pattern: title ? "%#{title}%" : nil,
-          done: done,
-          start_deadline: start_deadline,
-          end_deadline: end_deadline,
-        }
-
-        records = @db.fetch(LIST_TASKS_BY_USER_ID_WITH_FILTERS, query_params).all
-      
-      else
-
-        records = @db.fetch(LIST_TASKS_BY_USER_ID, { user_id: user_id }).all
-      
+      if start_deadline && end_deadline
+        conditions << 'deadline >= :start_deadline AND deadline < :end_deadline'
+      elsif start_deadline
+        conditions << 'deadline >= :start_deadline'
+      elsif end_deadline
+        conditions << 'deadline < :end_deadline'
       end
 
-      return [] if records.nil? || records.empty?
+      query = LIST_TASKS_BY_USER_ID
 
-      records.map { |record| Entities::Task.new record }
+      conditions.each do |condition|
+        query = "#{query} AND #{condition}"
+      end
+
+      @db.fetch(query, filters.merge({ user_id: user_id })).all.map do |task|
+        Todo::Entities::Task.new task
+      end
     end
 
     FIND_TASK_BY_ID = <<~SQL.freeze
