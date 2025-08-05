@@ -1,12 +1,17 @@
 require 'sinatra'
-require_relative '../lib/todo'
+
 require_relative 'authenticator'
+require_relative '../lib/todo'
+
 class Api < Sinatra::Base
+  attr_writer :todo
+
   set :environment, :production
   set :default_content_type, :json
   disable :dump_errors, :raise_errors
 
   use Authenticator
+
   before do
     @json_params = {}
 
@@ -25,6 +30,10 @@ class Api < Sinatra::Base
 
   error JSON::ParserError do
     [400, { error: { message: 'Invalid JSON request' } }.to_json]
+  end
+
+  post 'users/username' do
+    # ...
   end
 
   get '/tasks' do
