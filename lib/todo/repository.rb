@@ -60,7 +60,7 @@ class Todo
         :end_deadline
       )
 
-      conditions << 'title LIKE :title' unless title.nil?
+      conditions << "title LIKE '%#{title}%'" unless title.nil?
       conditions << 'done = :done' unless done.nil?
 
       if start_deadline && end_deadline
